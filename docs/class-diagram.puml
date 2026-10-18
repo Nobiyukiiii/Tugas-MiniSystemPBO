@@ -1,0 +1,48 @@
+@startuml
+interface Identifiable { +getId(): String }
+abstract class Item {
+  -id: String
+  -judul: String
+  -tahun: int
+  -tersedia: boolean
+  +getMaxLoanDays(): int
+  +getDendaPerHari(): double
+  +hitungDenda(hari: long): double
+}
+class Buku { -penulis: String }
+class Majalah { -edisi: String }
+class Jurnal { -issn: String }
+abstract class Anggota {
+  -id: String
+  -nama: String
+  +getMaxPinjam(): int
+  +getBonusHari(): int
+  +bisaMeminjam(): boolean
+}
+class Mahasiswa
+class Dosen
+class Peminjaman {
+  -tglPinjam: LocalDate
+  -jatuhTempo: LocalDate
+  -tglKembali: LocalDate
+  +kembalikan(tgl: LocalDate): double
+}
+interface "Repository<T>" as Repository
+class "InMemoryRepository<T>" as InMemoryRepository
+class PerpustakaanService
+class WebApp
+
+Identifiable <|.. Item
+Identifiable <|.. Anggota
+Item <|-- Buku
+Item <|-- Majalah
+Item <|-- Jurnal
+Anggota <|-- Mahasiswa
+Anggota <|-- Dosen
+Anggota "1" o-- "0..*" Peminjaman : pinjamanAktif
+Peminjaman "*" --> "1" Item
+Repository <|.. InMemoryRepository
+PerpustakaanService --> Repository
+PerpustakaanService "1" *-- "*" Peminjaman : riwayat
+WebApp --> PerpustakaanService
+@enduml
