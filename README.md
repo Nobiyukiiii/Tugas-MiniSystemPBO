@@ -6,7 +6,6 @@ Aplikasi web sederhana berbasis Java untuk mengelola koleksi, anggota, dan pemin
 |---|---|
 | Mata kuliah | Pemrograman Berorientasi Objek |
 | Dosen pengampu | Hardiansyah, S.T., M.Kom |
-| Jenis tugas | Individual, mini sistem OOP (project dan laporan) |
 | Bahasa | Java 17+ |
 | Dependensi | Tidak ada (hanya JDK) |
 
@@ -78,8 +77,8 @@ java -cp out id.perpus.web.WebApp 9000
 
 | Koleksi | Anggota |
 |---|---|
-| `B001` Clean Code (Buku) | `A001` Budi Santoso (Mahasiswa) |
-| `B002` Laskar Pelangi (Buku) | `D001` Hardiansyah (Dosen) |
+| `B001` Clean Code (Buku) | `A001` Citra Maharani (Mahasiswa) |
+| `B002` Laskar Pelangi (Buku) | `D001` Bayu Pranata (Dosen) |
 | `M001` Tempo Edisi Khusus (Majalah) | |
 | `J001` Jurnal Informatika (Jurnal) | |
 
@@ -280,7 +279,7 @@ Gunakan data awal. Kolom "Hasil" adalah pesan yang tampil di halaman.
 | 3 | Kembali tepat waktu | Kembalikan tanpa isi tanggal | `Denda: Rp0` |
 | 4 | Kembali terlambat | Pinjam `B001`, kembalikan 10 hari setelah jatuh tempo | `Denda: Rp10.000` |
 | 5 | Denda berbeda per jenis | Pinjam `J001`, kembalikan 2 hari setelah jatuh tempo | `Denda: Rp4.000` |
-| 6 | Kuota mahasiswa penuh | `A001` meminjam 3 koleksi, lalu coba pinjam ke-4 | `Kuota pinjam Budi Santoso penuh (3)` |
+| 6 | Kuota mahasiswa penuh | `A001` meminjam 3 koleksi, lalu coba pinjam ke-4 | `Kuota pinjam Citra Maharani penuh (3)` |
 | 7 | Bonus masa pinjam dosen | Pinjam `B002` oleh `D001` | Jatuh tempo 21 hari setelah tanggal pinjam |
 | 8 | Hapus koleksi sedang dipinjam | Hapus koleksi berstatus Dipinjam | `Koleksi sedang dipinjam, tidak bisa dihapus` |
 | 9 | Tambah koleksi dengan ID ganda | Tambah koleksi ber-ID `B001` | `ID koleksi sudah terdaftar: B001` |

@@ -37,8 +37,8 @@ public class WebApp {
         service.tambahItem(new Buku("B002", "Laskar Pelangi", 2005, "Andrea Hirata"));
         service.tambahItem(new Majalah("M001", "Tempo Edisi Khusus", 2023, "No. 12"));
         service.tambahItem(new Jurnal("J001", "Jurnal Informatika", 2022, "1978-1234"));
-        service.tambahAnggota(new Mahasiswa("A001", "Budi Santoso"));
-        service.tambahAnggota(new Dosen("D001", "Hardiansyah"));
+        service.tambahAnggota(new Mahasiswa("A001", "Citra Maharani"));
+        service.tambahAnggota(new Dosen("D001", "Bayu Pranata"));
     }
 
     // ---------- Routing ----------
