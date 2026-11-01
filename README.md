@@ -4,9 +4,11 @@ Aplikasi web sederhana berbasis Java untuk mengelola koleksi, anggota, dan pemin
 
 | | |
 |---|---|
-| Mata kuliah | Pemrograman Berorientasi Objek |
+| Mata kuliah | Pemrograman Berorientasi Objek (IFC002, 3 sks, Semester II) |
 | Dosen pengampu | Hardiansyah, S.T., M.Kom |
-| Bahasa | Java 17+ |
+| Jenis tugas | Individual, mini sistem OOP (project dan laporan) |
+| Nama / NIM | `[isi nama]` / `[isi NIM]` |
+| Bahasa | Java 11+ |
 | Dependensi | Tidak ada (hanya JDK) |
 
 ## Daftar Isi
@@ -45,14 +47,14 @@ Aplikasi web sederhana berbasis Java untuk mengelola koleksi, anggota, dan pemin
 
 | Komponen | Pilihan | Alasan |
 |---|---|---|
-| Bahasa | Java 17+ | Syarat tugas, memakai text block dan switch expression |
+| Bahasa | Java 11+ | Syarat tugas. Sintaks dibuat sederhana (if-else, for, collections) agar mudah dipahami |
 | Server web | `com.sun.net.httpserver` (bawaan JDK) | Tanpa framework dan Maven, langsung jalan dengan `javac` dan `java` |
 | Tampilan | HTML dan CSS yang dirender server | Cukup untuk aplikasi web sederhana |
 | Penyimpanan | Collections di memori | Sesuai fokus tugas, tanpa database |
 
 ## Cara Menjalankan
 
-**Prasyarat:** JDK 17 atau lebih baru (bukan hanya JRE). Cek dengan `javac -version`.
+**Prasyarat:** JDK 11 atau lebih baru, disarankan 17 atau 21 (bukan hanya JRE). Cek dengan `javac -version`.
 
 **PowerShell (Windows / terminal VS Code):**
 ```powershell
@@ -175,7 +177,7 @@ classDiagram
     class Repository~T~ {
         <<interface>>
         +simpan(T)
-        +cariById(String) Optional~T~
+        +cariById(String) T
         +semua() List~T~
         +hapus(String) boolean
     }
@@ -207,10 +209,10 @@ classDiagram
 | **Class dan responsibility** | Setiap class punya satu tanggung jawab: `Item` menyimpan data dan aturan koleksi, `Peminjaman` mencatat satu transaksi, `PerpustakaanService` mengatur alur bisnis, `InMemoryRepository` menyimpan data, `WebApp` melayani HTTP | seluruh package |
 | **Encapsulation** | Semua field `private`, akses lewat getter. Setter memvalidasi nilai (judul tidak kosong, tahun 1450 sampai tahun berjalan). Daftar pinjaman anggota dikembalikan sebagai `unmodifiableList`, dan perubahannya hanya lewat method package-private `tambahPinjaman` dan `hapusPinjaman` | `Item`, `Anggota` |
 | **Inheritance** | `Buku`, `Majalah`, `Jurnal` mewarisi `Item`. `Mahasiswa` dan `Dosen` mewarisi `Anggota` | `model` |
-| **Abstraction** | `Item` dan `Anggota` adalah abstract class dengan method abstrak yang wajib diisi subclass. `Identifiable` dan `Repository<T>` adalah interface | `model`, `repository` |
+| **Abstraction** | `Item` dan `Anggota` adalah abstract class dengan method abstrak yang wajib diisi subclass. `Identifiable` dan `Repository<T>` adalah interface. `WebApp` mengimplementasikan interface `HttpHandler` bawaan JDK | `model`, `repository` |
 | **Polymorphism** | `getMaxLoanDays()`, `getDendaPerHari()`, `getMaxPinjam()`, dan `getBonusHari()` di-override berbeda tiap subclass. `Peminjaman` dan `PerpustakaanService` hanya memegang tipe `Item` dan `Anggota`, lalu perilaku yang tepat terpilih saat runtime | `Peminjaman`, `PerpustakaanService` |
 | **Generics** | `Repository<T extends Identifiable>` dan `InMemoryRepository<T>` dipakai ulang untuk `Item` dan `Anggota` | `repository` |
-| **Collections** | `LinkedHashMap` (penyimpanan berdasarkan ID, urutan input terjaga), `ArrayList` (riwayat transaksi dan pinjaman aktif), `List` dan `Optional` pada API repository | `InMemoryRepository`, `PerpustakaanService` |
+| **Collections** | `LinkedHashMap` (penyimpanan berdasarkan ID, urutan input terjaga), `ArrayList` (riwayat transaksi dan pinjaman aktif), `List` pada API repository (`cariById` mengembalikan `null` jika data tidak ada) | `InMemoryRepository`, `PerpustakaanService` |
 | **Hubungan antarclass** | *Association*: `Peminjaman` ke `Anggota` dan `Item`. *Aggregation*: `Anggota` ke `Peminjaman` aktif. *Composition*: service memiliki riwayat transaksi. *Dependency*: service ke repository, web ke service | seluruh package |
 | **Exception handling** | `PerpustakaanException` untuk pelanggaran aturan bisnis. `IllegalArgumentException` untuk input tidak valid | `service`, `model` |
 
@@ -258,6 +260,7 @@ Setiap aksi POST memakai pola *Post/Redirect/Get*: server membalas dengan redire
 |---|---|
 | ID koleksi atau anggota sudah terdaftar | Ditolak dengan pesan |
 | Judul, nama, ID, atau atribut khusus kosong | Ditolak |
+| Tahun bukan angka | Ditolak |
 | Tahun terbit di luar 1450 sampai tahun berjalan | Ditolak |
 | Koleksi sedang dipinjam (pinjam atau hapus) | Ditolak |
 | Kuota pinjaman anggota penuh | Ditolak, pesan menyebut kuota |

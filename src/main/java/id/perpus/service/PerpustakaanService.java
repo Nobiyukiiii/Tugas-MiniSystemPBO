@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 /** Logika bisnis perpustakaan. Bergantung pada interface Repository, bukan implementasinya. */
 public class PerpustakaanService {
@@ -21,66 +20,118 @@ public class PerpustakaanService {
         this.anggotaRepo = anggotaRepo;
     }
 
+    // ---------- Koleksi ----------
+
     public void tambahItem(Item item) {
-        if (itemRepo.cariById(item.getId()).isPresent())
+        if (itemRepo.cariById(item.getId()) != null) {
             throw new PerpustakaanException("ID koleksi sudah terdaftar: " + item.getId());
+        }
         itemRepo.simpan(item);
     }
 
     public void hapusItem(String id) {
         Item item = cariItem(id);
-        if (!item.isTersedia()) throw new PerpustakaanException("Koleksi sedang dipinjam, tidak bisa dihapus");
+        if (!item.isTersedia()) {
+            throw new PerpustakaanException("Koleksi sedang dipinjam, tidak bisa dihapus");
+        }
         itemRepo.hapus(id);
     }
 
     public Item cariItem(String id) {
-        return itemRepo.cariById(id).orElseThrow(() -> new PerpustakaanException("Koleksi tidak ditemukan: " + id));
+        Item item = itemRepo.cariById(id);
+        if (item == null) {
+            throw new PerpustakaanException("Koleksi tidak ditemukan: " + id);
+        }
+        return item;
     }
 
     public List<Item> cariItemByJudul(String kata) {
-        String q = kata.toLowerCase(Locale.ROOT);
-        return itemRepo.semua().stream().filter(i -> i.getJudul().toLowerCase(Locale.ROOT).contains(q)).toList();
+        String kataKecil = kata.toLowerCase();
+        List<Item> hasil = new ArrayList<>();
+        for (Item item : itemRepo.semua()) {
+            if (item.getJudul().toLowerCase().contains(kataKecil)) {
+                hasil.add(item);
+            }
+        }
+        return hasil;
     }
 
-    public List<Item> semuaItem() { return itemRepo.semua(); }
+    public List<Item> semuaItem() {
+        return itemRepo.semua();
+    }
+
+    // ---------- Anggota ----------
 
     public void tambahAnggota(Anggota anggota) {
-        if (anggotaRepo.cariById(anggota.getId()).isPresent())
+        if (anggotaRepo.cariById(anggota.getId()) != null) {
             throw new PerpustakaanException("ID anggota sudah terdaftar: " + anggota.getId());
+        }
         anggotaRepo.simpan(anggota);
     }
 
     public Anggota cariAnggota(String id) {
-        return anggotaRepo.cariById(id).orElseThrow(() -> new PerpustakaanException("Anggota tidak ditemukan: " + id));
+        Anggota anggota = anggotaRepo.cariById(id);
+        if (anggota == null) {
+            throw new PerpustakaanException("Anggota tidak ditemukan: " + id);
+        }
+        return anggota;
     }
 
-    public List<Anggota> semuaAnggota() { return anggotaRepo.semua(); }
+    public List<Anggota> semuaAnggota() {
+        return anggotaRepo.semua();
+    }
+
+    // ---------- Transaksi ----------
 
     public Peminjaman pinjam(String idAnggota, String idItem, LocalDate tanggal) {
         Anggota anggota = cariAnggota(idAnggota);
         Item item = cariItem(idItem);
-        if (!item.isTersedia()) throw new PerpustakaanException("Koleksi sedang dipinjam");
-        if (!anggota.bisaMeminjam())
-            throw new PerpustakaanException("Kuota pinjam " + anggota.getNama() + " penuh (" + anggota.getMaxPinjam() + ")");
-        Peminjaman p = new Peminjaman(anggota, item, tanggal);
-        riwayat.add(p);
-        return p;
+
+        if (!item.isTersedia()) {
+            throw new PerpustakaanException("Koleksi sedang dipinjam");
+        }
+        if (!anggota.bisaMeminjam()) {
+            throw new PerpustakaanException(
+                    "Kuota pinjam " + anggota.getNama() + " penuh (" + anggota.getMaxPinjam() + ")");
+        }
+
+        Peminjaman peminjaman = new Peminjaman(anggota, item, tanggal);
+        riwayat.add(peminjaman);
+        return peminjaman;
     }
 
     public Peminjaman kembali(String idPeminjaman, LocalDate tanggal) {
-        Peminjaman p = riwayat.stream()
-                .filter(r -> r.getId().equalsIgnoreCase(idPeminjaman.trim()))
-                .findFirst()
-                .orElseThrow(() -> new PerpustakaanException("Transaksi tidak ditemukan: " + idPeminjaman));
+        Peminjaman peminjaman = cariPeminjaman(idPeminjaman);
         try {
-            p.kembalikan(tanggal);
-        } catch (IllegalStateException | IllegalArgumentException e) {
+            peminjaman.kembalikan(tanggal);
+        } catch (IllegalStateException e) {
+            throw new PerpustakaanException(e.getMessage());
+        } catch (IllegalArgumentException e) {
             throw new PerpustakaanException(e.getMessage());
         }
-        return p;
+        return peminjaman;
     }
 
-    public List<Peminjaman> riwayat() { return Collections.unmodifiableList(riwayat); }
+    private Peminjaman cariPeminjaman(String id) {
+        for (Peminjaman p : riwayat) {
+            if (p.getId().equalsIgnoreCase(id.trim())) {
+                return p;
+            }
+        }
+        throw new PerpustakaanException("Transaksi tidak ditemukan: " + id);
+    }
 
-    public List<Peminjaman> pinjamanAktif() { return riwayat.stream().filter(Peminjaman::isAktif).toList(); }
+    public List<Peminjaman> riwayat() {
+        return Collections.unmodifiableList(riwayat);
+    }
+
+    public List<Peminjaman> pinjamanAktif() {
+        List<Peminjaman> aktif = new ArrayList<>();
+        for (Peminjaman p : riwayat) {
+            if (p.isAktif()) {
+                aktif.add(p);
+            }
+        }
+        return aktif;
+    }
 }
