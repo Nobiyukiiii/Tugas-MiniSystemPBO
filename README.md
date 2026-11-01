@@ -4,10 +4,9 @@ Aplikasi web sederhana berbasis Java untuk mengelola koleksi, anggota, dan pemin
 
 | | |
 |---|---|
-| Mata kuliah | Pemrograman Berorientasi Objek (IFC002, 3 sks, Semester II) |
+| Mata kuliah | Pemrograman Berorientasi Objek |
 | Dosen pengampu | Hardiansyah, S.T., M.Kom |
 | Jenis tugas | Individual, mini sistem OOP (project dan laporan) |
-| Nama / NIM | `[isi nama]` / `[isi NIM]` |
 | Bahasa | Java 11+ |
 | Dependensi | Tidak ada (hanya JDK) |
 
